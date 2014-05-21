@@ -10,7 +10,7 @@ int main(int argc, char** argv) {
 
     image_transport::ImageTransport image_transport(lidar_node);
     lidar_data.obstacle_publisher = image_transport.advertise(std::string("/") + node_name + std::string("/obstacles"), 10);
-    ros::Subscriber scan_subscriber = lidar_node.subscribe("/sensors/hokuyo_nodes/0", 2, &LidarData::updateMap, &lidar_data);
+    ros::Subscriber scan_subscriber = lidar_node.subscribe("/scan", 2, &LidarData::updateMap, &lidar_data);
     //ros::Subscriber scan_subscriber = lidar_node.subscribe("/scan", 2, &LidarData::update_map, &lidardata);
     cv::Mat show_image1(400, 400, CV_8UC1, cvScalarAll(0));
     cv::Mat show_image2(400, 400, CV_8UC1, cvScalarAll(0));

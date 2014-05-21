@@ -10,14 +10,20 @@
     <param name="port" value="/dev/serial/by-id/usb-FTDI_FT232R_USB_UART_A700ewWv-if00-port0" />
   </node>
 
-  <node if="$(arg VectorNav)" pkg="vectorNav" type="vectorNav" name="vectorNav" /> 
+  <node pkg="vn_ins" type="vn_ins" name="vn_ins" /> 
 
-  <node if="$(arg Sparkfun)" pkg="eklavya_imu_sparkfun" type="sparkfun_imu_node.py" name="eklavya_imu_sparkfun" />
-  
-  <node if="$(arg Logitech)" pkg="logitech_camera" type="logitech_camera" args="1" name="logitech_camera" />
+<!-- <node pkg="sparkfun_ahrs" type="sparkfun_imu_node.py" name="node" output="screen">
+        <!-- <param name="port" value="/dev/ttyUSB0" /> -->
+        <param name="port" value="/dev/serial/by-id/usb-FTDI_FT232R_USB_UART_A700ewWv-if00-port0" /> 
+    <param name="baudrate" value="57600" />
+  </node>-->
 
+  <node pkg="logitech_camera" type="logitech_camera" name="logitech_camera" cwd="node" output="screen">
+        <param name="camera_id" type="int" value="0"/>
+        <param name="node_name" type="str" value="camera"/>
+        <param name="message_queue_size" type="int" value="10"/>
+  </node>
 
-  
   <node if="$(arg Roboteq)" pkg="eklavya_roboteq" type="server" name="server" respawn="true"/>
   
   <node if="$(arg Roboteq)" pkg="eklavya_roboteq" type="eklavya_controller_client" name="eklavya_controller_client" />

@@ -18,11 +18,11 @@ void exit_with_help() {
 }
 
 int main(int argc, char** argv) {
-    int first_subscriber_flag = 1, second_subscriber_flag = 1, debug_flag = 0;
+    int first_subscriber_flag = 0, second_subscriber_flag = 1, debug_flag = 0;
 
     std::string first_subscriber_topic_name, second_subcriber_topic_name, node_id, node_name, publisher_topic_name;
     first_subscriber_topic_name = std::string("/obstacle_detector/obstacles");
-    second_subcriber_topic_name = std::string("/lane_detector0/lanes");
+    second_subcriber_topic_name = std::string("/lane_detector/lanes");
     node_id = std::string("0");
     node_name = std::string("interpreter_fusion_");
 
@@ -70,7 +70,7 @@ int main(int argc, char** argv) {
         }
     }
 
-    publisher_topic_name = std::string("/map");
+    publisher_topic_name = std::string("/data_fuser/map");
     node_name = node_name + node_id;
 
     ros::init(argc, argv, node_name.c_str());

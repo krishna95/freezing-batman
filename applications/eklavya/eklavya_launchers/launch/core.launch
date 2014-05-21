@@ -1,18 +1,71 @@
 <?xml version="1.0"?>
 
 <launch>
-    <node pkg="obstacle_detector" type="obstacle_detector" name="obstacle_detector" args="-s /sensors/hokuyo_nodes/0" output="screen" cwd="node">
-        <param name ="debug" type= "int" value= "1"/>
-        <param name= "subscriber_topic" type= "string" value= "/scan"/>
-        <param name="publisher_topic" type= "string" value= "/obstacle_detector/obstacles"/>
-        <param name= "max_dist" type= "int" value= "100"/> 
-        <param name= "min_dist" type= "int" value= "1"/>
+     <node pkg="obstacle_detector" type="obstacle_detector" name="obstacle_detector" cwd="node" output="screen">
+        <param name="center_x" type="int" value="500"/>
+        <param name="center_y" type="int" value="100"/>
+        <param name="debug_mode" type="int" value="0"/>
+        <param name="hokuyo_scale" type="int" value="100"/>
+        <param name="lidar_y_shift" type="int" value="30"/>
+        <param name="map_size" type="int" value="1000"/>
+        <param name="max_dist" type="int" value="400"/>
+        <param name="min_dist" type="int" value="0"/>
+        <param name="obstacle_expansion" type="int" value="30"/>
+        <param name="wait_time" type="int" value="100"/>
     </node>
-    <node pkg="lane_detector_final" type="laneDetectorNode" name="lane_detector_final" output="screen" cwd="node" >
-        <param name="node_id" type="str" value="0"/>
-        <param name="debug_mode" type="int" value="5"/>
+   <node pkg="lane_detector" type="laneDetectorNode" name="lane_detector" args="6" output="screen" cwd="node">
+        <param name="debug_mode" type="int" value="0"/>
+        <param name="ipt_offsets_file" type="str" value="../data/ipt_offsets0.txt"/>                
+        <param name="map_size" type="int" value="1000"/>        
+        <param name="published_topic_name" type="str" value="/lane_detector/lanes"/>        
+        <param name="subscribed_topic_name" type="str" value="/camera/image"/>
         <param name="time_functions" type="int" value="0"/>
-        <param name="subscribe_topic_name" type="str" value="/camera/image"/>
-        <param name="train_file" type="str" value="../data/Samples"/>
+        <param name="training_data_file" type="str" value="../data/Samples"/>
+        <param name="wait_time" type="int" value="10"/>
+        <param name="warp_matrix_file" type="str" value="../data/warp_matrix0.dat"/>
     </node>
+    <node pkg="data_fuser" type="Fusion" name="interpreter_fusion_" output="screen" cwd="node">
+    <node pkg="lane_navigator" type="lane_navigator" name="lane_navigator" output="screen" cwd="node" args="1">
+        <param name="debug" type="int" value="0"  />
+    </node>
+    <node pkg="waypoint_selector" type="waypoint_selector" name="waypoint_selector" args="3" output="screen" cwd="node">
+        <param name="proximity" type="double" value="2.0"/>
+        <param name="filename" type="str" value="../data/GPS_waypoints.txt"/>                
+        <param name="strategy" type="int" value="1"/>        
+    </node>
+    <node pkg="waypoint_navigator" type="waypoint_navigator" name="waypoint_navigator" args="1" output="screen" cwd="node">
+        <param name="yaw_subscriber_topic" type="str" value="/vn_ins/yaw"/>                      
+    </node>
+    <node pkg="dummy_navigator" type="dummy_navigator" name="dummy_navigator">
+        <param name="target_x" type="double" value="10."/>
+        <param name="target_y" type="double" value="0."/>
+        <param name="target_theta" type="double" value="1.57079632679"/>
+    </node>
+    <node pkg="strategy_planner" type="strategy_planner" name="strategy_planner" output="screen" cwd="node" />
+     <node pkg="local_planner" type="local_planner" name="local_planner" output="screen" cwd="node">
+        <param name="debug_current_state" type="int" value="0"/>
+        <param name="distance_transform" type="int" value="1"/>
+        <param name="seed_file2" type="str" value="/seeds/seeds2.txt"/>
+        <param name="seed_file8" type="str" value="/seeds/seeds8.txt"/>
+        <param name="planning_strategy" type="int" value="1"/>
+        <param name="map_max_rows" type="int" value="1000"/>
+        <param name="map_max_cols" type="int" value="1000"/>
+        <param name="loop_rate" type="int" value="10"/>
+        <param name="wait_time" type="int" value="100"/>
+        <param name="max_iterations" type="int" value="10000"/>
+        <param name="max_threshold" type="int" value="255"/>
+        <param name="min threshold" type="int" value="100"/>
+        <param name="distance_transform_constant" type="int" value="2"/>
+        <param name="vmax" type="int" value="70"/>
+        <param name="min_rad" type="int" value="70"/>
+        <param name="max_iterations_load_given_seeds" type="int" value="10000"/>
+    </node>
+    <node pkg="eklavya3_pilot" type="eklavya3_pilot" name="eklavya3_pilot">
+        <param name="pilot_mode" type="int" value="1"/>
+    </node>
+    
+
+
+    
+
 </launch>
