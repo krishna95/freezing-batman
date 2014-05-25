@@ -11,10 +11,12 @@
 namespace navigation {
 
     Debugger::Debugger() {
+        map_max_rows = 1000;
+        map_max_cols = 1000;
         node_handle.getParam("debugger/map_max_rows", map_max_rows);
         node_handle.getParam("debugger/map_max_cols", map_max_cols);
 
-        fusion_map_subscriber = node_handle.subscribe("data_fuser/map", 10, &Debugger::updateFusionMap, this);
+        fusion_map_subscriber = node_handle.subscribe("/data_fuser/map", 10, &Debugger::updateFusionMap, this);
         target_subscriber = node_handle.subscribe("strategy_planner/target", 10, &Debugger::updateTargetPose, this);
         path_subscriber = node_handle.subscribe("local_planner/path", 10, &Debugger::updatePath, this);
 
@@ -47,20 +49,29 @@ namespace navigation {
         }
     }
 
-    void Debugger::makeMap() {
-        cv::circle(local_map, cvPoint(target_pose.x(), local_map.rows - 1 - target_pose.y()), 5, cvScalar(128), -1);
-        cv::line(local_map, cvPoint(target_pose.x(), local_map.rows - 1 - target_pose.y()), cvPoint(target_pose.x() + 15 * cos((target_pose.theta() * M_PI) / 180), local_map.rows - 1 - target_pose.y() - 15 * sin((target_pose.theta() * M_PI) / 180)), cvScalar(128), 1, 8, 0);
-        cv::circle(local_map, cvPoint(bot_pose.x(), local_map.rows - 1 - bot_pose.y()), 5, cvScalar(128), -1);
-        cv::line(local_map, cvPoint(bot_pose.x(), local_map.rows - 1 - bot_pose.y()), cvPoint(bot_pose.x() + 15 * cos((bot_pose.theta() * M_PI) / 180), local_map.rows - 1 - bot_pose.y() - 15 * sin((bot_pose.theta() * M_PI) / 180)), cvScalar(128), 1, 8, 0);
+    void Debugger::updateStatus(std_msgs::String status) {
+        if (status.data == "NO PATH FOUND" || status.data == "OPEN LIST OVERFLOW" || status.data == "TARGET BEHIND") {
+            load_in_planner = true;
+        } else {
+            load_in_planner = false;
+        }
+    }
+
+    void Debugger::constructMap() {
+        cv::Mat img = local_map;
+        cv::circle(img, cvPoint(target_pose.x(), local_map.rows - 1 - target_pose.y()), 5, cvScalar(128), -1);
+        cv::line(img, cvPoint(target_pose.x(), local_map.rows - 1 - target_pose.y()), cvPoint(target_pose.x() + 15 * cos((target_pose.theta() * M_PI) / 180), local_map.rows - 1 - target_pose.y() - 15 * sin((target_pose.theta() * M_PI) / 180)), cvScalar(128), 1, 8, 0);
+        cv::circle(img, cvPoint(bot_pose.x(), local_map.rows - 1 - bot_pose.y()), 5, cvScalar(128), -1);
+        cv::line(img, cvPoint(bot_pose.x(), local_map.rows - 1 - bot_pose.y()), cvPoint(bot_pose.x() + 15 * cos((bot_pose.theta() * M_PI) / 180), local_map.rows - 1 - bot_pose.y() - 15 * sin((bot_pose.theta() * M_PI) / 180)), cvScalar(128), 1, 8, 0);
         for (std::vector<Pose>::iterator poseIt = path.begin(); poseIt != path.end(); ++poseIt) {
             const Pose pos = *poseIt;
-            cv::circle(local_map, cv::Point(pos.x, local_map.rows - pos.y - 1), 3, cv::Scalar(255), -1);
+            cv::circle(img, cv::Point(pos.x, local_map.rows - pos.y - 1), 3, cv::Scalar(255), -1);
         }
     }
 
     void Debugger::showPath() {
         cv::imshow("FusionMap", local_map);
-        cvWaitKey(10);
+        cv::waitKey(10);
     }
 }
 
@@ -72,12 +83,12 @@ int main(int argc, char* argv[]) {
     navigation::Debugger debugger;
     debugger.node_handle = node_handle;
 
-    int loop_rate_hz;
+    int loop_rate_hz = 10;
     node_handle.getParam("debugger/loop_rate", loop_rate_hz);
     ros::Rate loop_rate(loop_rate_hz);
     while (ros::ok()) {
         ros::spinOnce();
-        debugger.makeMap();
+        debugger.constructMap();
         debugger.showPath();
         loop_rate.sleep();
     }

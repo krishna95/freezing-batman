@@ -2,7 +2,7 @@
 \mainpage
 \htmlinclude manifest.html
 
-\b hokuyo_lidar 
+\b nose_navigator 
 
 <!-- 
 Provide an overview of your package.
