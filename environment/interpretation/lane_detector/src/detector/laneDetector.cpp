@@ -41,7 +41,7 @@ void LaneDetector::interpret() {
     }
     
     cv::imwrite("test2_dawn.jpg",result);
-    
+    cvtColor(result,result,CV_BGR2HSV);
 	  
     if (time_functions > 0) {
         gettimeofday(&tval_before, NULL);
@@ -55,12 +55,13 @@ void LaneDetector::interpret() {
             std::cout << "GrassRemoval FPS : " << 1. / time_elapsed << std::endl;
         }
     }
+    
     if (debug_mode > 0) {
         cv::imshow(grass_removal_output_window, result);
         cv::waitKey(wait_time);
     }
 
-
+	cvtColor(result,result,CV_HSV2BGR);
 
     if (time_functions > 0) {
         gettimeofday(&tval_before, NULL);

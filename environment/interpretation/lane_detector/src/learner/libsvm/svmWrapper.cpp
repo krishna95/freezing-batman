@@ -170,8 +170,8 @@ int SVM::predict(cv::Mat _input_, int &_output_) {
             x[i].value = (double) _input_.at<cv::Vec3b>(r, c)[1];
             i++;
             x[i].index = i;
-            x[i].value = (double) _input_.at<cv::Vec3b>(r, c)[2];
-            i++;
+           // x[i].value = (double) _input_.at<cv::Vec3b>(r, c)[2];
+           // i++;
         }
     }
     x[max_nr_attr].index = -1;
@@ -187,13 +187,13 @@ int SVM::predictKernelWise(cv::Mat &_input_, int kernel_size) {
 
     for (int i = 0; i < _input_.rows; i += kernel_size) {
         for (int j = 0; j < _input_.cols; j += kernel_size) {
-            if ((_input_.rows - i - 1) > kernel_size && (_input_.cols - j - 1) > kernel_size) {
+            if ((_input_.rows - i - 1) > kernel_size && (_input_.cols - j - 1) > kernel_size ) {
                 start_col = j;
                 start_row = i;
             } else if ((_input_.rows - i - 1) > kernel_size) {
                 start_col = _input_.cols - kernel_size - 1;
                 start_row = i;
-            } else if ((_input_.cols - j - 1) > kernel_size) {
+            } else if ((_input_.cols - j - 1) > kernel_size ) {
                 start_col = j;
                 start_row = _input_.rows - kernel_size - 1;
             } else {
@@ -204,6 +204,7 @@ int SVM::predictKernelWise(cv::Mat &_input_, int kernel_size) {
             imgRoi = tempImage(cv::Rect(start_col, start_row, kernel_size, kernel_size));
             predict(imgRoi, result);
             if (result == 1) {
+				
                 cv::rectangle(_input_, cv::Point(start_col, start_row), cv::Point(start_col + kernel_size, start_row + kernel_size), cv::Scalar(0, 0, 0), CV_FILLED);
             }
         }

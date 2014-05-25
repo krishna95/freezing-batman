@@ -6,13 +6,13 @@
         <param name="ipt_offsets_file" type="str" value="../data/ipt_offsets0.txt"/>                
         <param name="map_size" type="int" value="1000"/>        
         <param name="published_topic_name" type="str" value="/lane_detector/lanes"/>        
-        <param name="subscribed_topic_name" type="str" value="/camera1/image"/>
+        <param name="subscribed_topic_name" type="str" value="/camera/image"/>
         <param name="time_functions" type="int" value="0"/>
-        <param name="training_data_file" type="str" value="../data/Samples"/>
+        <param name="training_data_file" type="str" value="../data/Samples1"/>
         <param name="wait_time" type="int" value="10"/>
         <param name="warp_matrix_file" type="str" value="../data/warp_matrix0.dat"/>
     </node>
     <node pkg="lane_navigator" type="lane_navigator" name="lane_navigator" output="screen" cwd="node" args="1">
-        <param name="debug" type="int" value="0"  />
+        <param name="debug" type="int" value="1"  />
     </node>
 </launch>

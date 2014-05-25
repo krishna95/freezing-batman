@@ -48,7 +48,7 @@ cv::Mat applyHough(cv::Mat &img, int debug) {
 } // applying probablistic hough transformation on the canny image obtained
 
 cv::Mat applyThreshold(cv::Mat &img, int debug) {
-    int bin_threshold = 50;
+    int bin_threshold = 100;
 
     cv::Mat grayscale_image(img.rows, img.cols, CV_8UC1, cvScalarAll(0));
     cv::Mat threshold_image(img.rows, img.cols, CV_8UC1, cvScalarAll(0));
@@ -59,7 +59,9 @@ cv::Mat applyThreshold(cv::Mat &img, int debug) {
     }
 
     cv::inRange(img, cv::Scalar(bin_threshold, bin_threshold, bin_threshold), cv::Scalar(256, 256, 256), threshold_image);
-
+	
+				
+			
     return threshold_image;
 } //  converting a given image into binary using a threshold_image
 

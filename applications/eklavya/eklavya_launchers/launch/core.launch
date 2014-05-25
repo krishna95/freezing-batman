@@ -13,7 +13,7 @@
         <param name="obstacle_expansion" type="int" value="30"/>
         <param name="wait_time" type="int" value="100"/>
     </node>
-   <node pkg="lane_detector" type="laneDetectorNode" name="lane_detector" args="6" output="screen" cwd="node">
+   <!--<node pkg="lane_detector" type="lane_detector" name="lane_detector" args="6" output="screen" cwd="node">
         <param name="debug_mode" type="int" value="0"/>
         <param name="ipt_offsets_file" type="str" value="../data/ipt_offsets0.txt"/>                
         <param name="map_size" type="int" value="1000"/>        
@@ -23,14 +23,14 @@
         <param name="training_data_file" type="str" value="../data/Samples"/>
         <param name="wait_time" type="int" value="10"/>
         <param name="warp_matrix_file" type="str" value="../data/warp_matrix0.dat"/>
-    </node>
-    <node pkg="data_fuser" type="Fusion" name="interpreter_fusion_" output="screen" cwd="node">
+    </node>-->
+    <node pkg="data_fuser" type="Fusion" name="interpreter_fusion_" output="screen" cwd="node" />
     <node pkg="lane_navigator" type="lane_navigator" name="lane_navigator" output="screen" cwd="node" args="1">
         <param name="debug" type="int" value="0"  />
     </node>
-    <node pkg="waypoint_selector" type="waypoint_selector" name="waypoint_selector" args="3" output="screen" cwd="node">
+    <!--<node pkg="waypoint_selector" type="waypoint_selector" name="waypoint_selector" args="3" output="screen" cwd="node">
         <param name="proximity" type="double" value="2.0"/>
-        <param name="filename" type="str" value="../data/GPS_waypoints.txt"/>                
+        <param name="filename" type="str" value="../data/GPS_waypoints25.txt"/>                
         <param name="strategy" type="int" value="1"/>        
     </node>
     <node pkg="waypoint_navigator" type="waypoint_navigator" name="waypoint_navigator" args="1" output="screen" cwd="node">
@@ -40,14 +40,18 @@
         <param name="target_x" type="double" value="10."/>
         <param name="target_y" type="double" value="0."/>
         <param name="target_theta" type="double" value="1.57079632679"/>
+    </node>-->
+    <node pkg="strategy_planner" type="strategy_planner" name="strategy_planner" output="screen" cwd="node" >
+     <param name="test_mode" type="bool" value="true"/>
+        <param name="planner" type="int" value="0"/>                
+        <param name="navigator" type="int" value="1"/>          
     </node>
-    <node pkg="strategy_planner" type="strategy_planner" name="strategy_planner" output="screen" cwd="node" />
-     <node pkg="local_planner" type="local_planner" name="local_planner" output="screen" cwd="node">
+      <node pkg="local_planner" type="local_planner" name="local_planner" output="screen" cwd="node">
         <param name="debug_current_state" type="int" value="0"/>
-        <param name="distance_transform" type="int" value="1"/>
+        <param name="distance_transform" type="int" value="0"/>
         <param name="seed_file2" type="str" value="/seeds/seeds2.txt"/>
         <param name="seed_file8" type="str" value="/seeds/seeds8.txt"/>
-        <param name="planning_strategy" type="int" value="1"/>
+        <param name="planning_strategy" type="int" value="0"/>
         <param name="map_max_rows" type="int" value="1000"/>
         <param name="map_max_cols" type="int" value="1000"/>
         <param name="loop_rate" type="int" value="10"/>
@@ -63,9 +67,4 @@
     <node pkg="eklavya3_pilot" type="eklavya3_pilot" name="eklavya3_pilot">
         <param name="pilot_mode" type="int" value="1"/>
     </node>
-    
-
-
-    
-
 </launch>
