@@ -35,7 +35,7 @@ void callback(const ImageConstPtr& lidar_image, const ImageConstPtr& lane_image)
                 }
             }
         }
-        cv::imwrite("fusion_map.jpg",fusion_map);
+ //       cv::imwrite("fusion_map.jpg",fusion_map);
 
         cv_bridge::CvImage message;
         message.encoding = image_encodings::MONO8;
@@ -54,7 +54,7 @@ void singleCallback(const ImageConstPtr& image) {
         message.encoding = image_encodings::MONO8;
         message.image = cv_image->image;
         world_map_publisher.publish(message.toImageMsg());
-    } catch (cv_bridge::Exception& e) {
+    }9 catch (cv_bridge::Exception& e) {
         ROS_ERROR("cv_bridge exception: %s", e.what());
         return;
     }

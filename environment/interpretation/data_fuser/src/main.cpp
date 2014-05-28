@@ -22,17 +22,20 @@ int main(int argc, char** argv) {
     ros::init(argc, argv, node_name.c_str());
     ros::NodeHandle node_handle;
 
-    int first_subscriber_flag = 0, second_subscriber_flag = 1, debug_flag = 1;
+    int first_subscriber_flag = 1, second_subscriber_flag = 1, debug_flag = 0 ,third_subscriber_flag=0;
     node_handle.getParam("first_subscriber_flag", first_subscriber_flag);
     node_handle.getParam("second_subscriber_flag", second_subscriber_flag);
+    node_handle.getParam("third_subscriber_flag", third_subscriber_flag);
     node_handle.getParam("debug_flag", debug_flag);
 
-    std::string first_subscriber_topic_name, second_subscriber_topic_name, node_id, publisher_topic_name;
+    std::string first_subscriber_topic_name, second_subscriber_topic_name, third_subscriber_topic_name ,node_id, publisher_topic_name;
     first_subscriber_topic_name = std::string("/obstacle_detector/obstacles");
-    second_subscriber_topic_name = std::string("/lane_detector/lanes");
+    second_subscriber_topic_name = std::string("/lane_detector0/lanes");
+    third_subscriber_topic_name = std::string("/lane_detector1/lanes");
     node_id = std::string("0");
     node_handle.getParam("first_subscriber_topic_name", first_subscriber_topic_name);
     node_handle.getParam("second_subscriber_topic_name", second_subscriber_topic_name);
+    node_handle.getParam("third_subscriber_topic_name", third_subscriber_topic_name);
     node_handle.getParam("node_id", node_id);
 
     for (int i = 1; i < argc; i++) {
@@ -56,6 +59,10 @@ int main(int argc, char** argv) {
                 second_subscriber_topic_name = std::string(argv[i]);
                 second_subscriber_flag = 1;
                 break;
+            case 't':
+				third_subscriber_topic_name = std::string(argv[i]);
+				third_subscriber_flag = 1;
+				break;
             case 'i':
                 node_id = std::string(argv[i]);
                 break;
@@ -77,6 +84,10 @@ int main(int argc, char** argv) {
         if (second_subscriber_flag) {
             std::cout << "\t Second Subscribed topic :\t" << second_subscriber_topic_name << std::endl;
         }
+        if (third_subscriber_flag) {
+            std::cout << "\t third Subscribed topic  :\t" << third_subscriber_topic_name << std::endl;
+        }
+        
     }
 
     publisher_topic_name = std::string("/data_fuser/map");
@@ -88,19 +99,23 @@ int main(int argc, char** argv) {
 
     message_filters::Subscriber<Image> first_subscriber;
     message_filters::Subscriber<Image> second_subscriber;
-    TimeSynchronizer<Image, Image> *sync;
+    message_filters::Subscriber<Image> third_subscriber;
+	    TimeSynchronizer<Image, Image, Image> *sync;
 
     image_transport::Subscriber image_subscriber;
 
-    if (first_subscriber_flag && second_subscriber_flag) {
+    if (first_subscriber_flag && second_subscriber_flag && third_subscriber_flag ) {
         first_subscriber.subscribe(node_handle, first_subscriber_topic_name.c_str(), 1);
         second_subscriber.subscribe(node_handle, second_subscriber_topic_name.c_str(), 1);
-        sync = new TimeSynchronizer<Image, Image>(first_subscriber, second_subscriber, 10);
-        sync->registerCallback(boost::bind(&callback, _1, _2));
+        third_subscriber.subscribe(node_handle, third_subscriber_topic_name.c_str(), 1);
+        sync = new TimeSynchronizer<Image, Image, Image>(first_subscriber, second_subscriber, third_subscriber, 10);
+        sync->registerCallback(boost::bind(&callback, _1, _2, _3));
     } else if (first_subscriber_flag) {
         image_subscriber = image_transporter.subscribe(first_subscriber_topic_name.c_str(), 2, singleCallback);
     } else if (second_subscriber_flag) {
         image_subscriber = image_transporter.subscribe(second_subscriber_topic_name.c_str(), 2, singleCallback);
+    }else if (third_subscriber_flag) {
+        image_subscriber = image_transporter.subscribe(third_subscriber_topic_name.c_str(), 2, singleCallback);
     }
 
     ros::spin();
